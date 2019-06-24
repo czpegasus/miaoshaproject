@@ -1,8 +1,13 @@
 package com.miaoshaproject;
 
+import com.miaoshaproject.dao.UserDOMapper;
+import com.miaoshaproject.dataobject.UserDO;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,13 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
  * Hello world!
  *
  */
-@EnableAutoConfiguration //将这个App的启动类当成一个自动化可以支持配置的bean，并且开启整个项目Springboot的自动化配置
+@SpringBootApplication(scanBasePackages = {"com.miaoshaproject"}) //将这个App的启动类当成一个自动化可以支持配置的bean，并且开启整个项目Springboot的自动化配置
 @RestController
+@MapperScan("com.miaoshaproject.dao")
 public class App
 {
+    @Autowired
+    private UserDOMapper userDOMapper;
+
     @RequestMapping("/")
     public String home(){
-        return "Hello World";
+        UserDO userDO = userDOMapper.selectByPrimaryKey(1);
+        if(userDO == null){
+            return "用户对象不存在";
+        }else{
+            return userDO.getName();
+        }
+
     }
 
     public static void main( String[] args ) {
